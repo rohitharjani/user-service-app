@@ -1,36 +1,56 @@
 package com.javaapp.controller;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.CollectionUtils;
 
 import com.javaapp.constants.TestConstants;
 import com.javaapp.models.UserDetails;
+import com.javaapp.repository.UserRepository;
 import com.javaapp.sevice.IUserService;
-@RunWith(MockitoJUnitRunner.class)
+
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTest {
 	
 	@InjectMocks
 	private UserController userController;
-	
+
+	@Autowired
+	private MockMvc mockMvc;
+
 	@Mock
 	private IUserService userService;
+
+	@MockBean
+	private UserRepository mockUserRepository;
+
 	
+	@Test
+	public void testAddUser_Unauthorized() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.post("/v1/user")).andExpect(status().isUnauthorized());
+	}
+
 	@Test
 	public void testAddUser() {
 		UserDetails user = buildUser(TestConstants.USER_ID, TestConstants.FIRST_NAME, TestConstants.LAST_NAME);
